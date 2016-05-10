@@ -23,3 +23,19 @@ fitxategiaKargatu <- function(fitx,burua=F, bereiz="\t") {
 matrizeEgit <- function(data) {
   return (dcast(data,Galdera~Erab))
 }
+
+
+adostasunak <- function(data) {
+  data <- data[,-1]
+  irakasleak <- colnames(data)
+  probak <- combn(irakasleak,m=2, simplify=F)
+  
+  # Kalkulatu adostasunak
+  emaitzak <- sapply(probak, function(x) kappa2(data[,c(x[1],x[2])])$value)
+  names(emaitzak) <- sapply(probak,function(x) paste(x[1],x[2],sep="-"))
+  
+  emaitzak <- as.matrix(emaitzak)
+  colnames(emaitzak) <- c("Adostasuna")
+  return(emaitzak)
+
+}

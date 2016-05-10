@@ -18,7 +18,7 @@ shinyUI(fluidPage(
     mainPanel(tabsetPanel(
       # Datu azterketa erakusteko
       # Lehenengo panela, irakasleen arteko adostasun informazioa
-      tabPanel("Adostasuna",textOutput("irr")),
+      tabPanel("Adostasuna",h1("Adostasuna"),verbatimTextOutput("irr"), h1("Erabiltzaile artekoa"),tableOutput("irakArtean")),
       # Ariketen inguruko informazioa
       tabPanel("Ariketen informazioa"),
       # Algoritmoka
