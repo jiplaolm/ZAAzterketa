@@ -6,9 +6,12 @@
 #
 
 library(shiny)
+source("tresnak.R")
+
+data <- matrizeEgit(fitxategiakIrakurri())
 
 shinyServer(function(input, output) {
 
- 
+ output$irr <- renderText({kappam.fleiss(data[, 2:ncol(data)],exact=F,detail=T)$value})
 
 })

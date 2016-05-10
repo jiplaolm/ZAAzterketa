@@ -1,4 +1,5 @@
 
+
 # This is the user-interface definition of a Shiny web application.
 # You can find out more about building applications with Shiny here:
 #
@@ -8,8 +9,19 @@
 library(shiny)
 
 shinyUI(fluidPage(
-
   # Application title
-  titlePanel("Arikiturri: Zientzia ariketak")
-
+  titlePanel("Arikiturri: Zientzia ariketak"),
+  sidebarLayout(sidebarPanel(## Erabiltzaileak erabili ditzaken aukerak
+    helpText(
+      "Aukerak hemen deskribatu"
+    )),
+    mainPanel(tabsetPanel(
+      # Datu azterketa erakusteko
+      # Lehenengo panela, irakasleen arteko adostasun informazioa
+      tabPanel("Adostasuna",textOutput("irr")),
+      # Ariketen inguruko informazioa
+      tabPanel("Ariketen informazioa"),
+      # Algoritmoka
+      tabPanel("Algoritmo 1")
+    )))
 ))
