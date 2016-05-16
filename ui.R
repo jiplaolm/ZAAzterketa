@@ -7,6 +7,8 @@
 #
 
 library(shiny)
+library(C3)
+library(htmlwidgets)
 
 shinyUI(fluidPage(
   # Application title
@@ -18,7 +20,7 @@ shinyUI(fluidPage(
     mainPanel(tabsetPanel(
       # Datu azterketa erakusteko
       # Lehenengo panela, irakasleen arteko adostasun informazioa
-      tabPanel("Adostasuna",h1("Adostasuna"),verbatimTextOutput("irr"), h1("Erabiltzaile artekoa"),tableOutput("irakArtean")),
+      tabPanel("Adostasuna",h1("Adostasuna"),fluidRow(column(6,C3GaugeOutput("irrPlot")),column(6,verbatimTextOutput("irr"))), h1("Erabiltzaile artekoa"),tableOutput("irakArtean")),
       # Ariketen inguruko informazioa
       tabPanel("Ariketen informazioa"),
       # Algoritmoka

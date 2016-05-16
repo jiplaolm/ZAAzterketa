@@ -6,15 +6,18 @@
 #
 
 library(shiny)
+library(C3)
 source("tresnak.R")
 
 data <- matrizeEgit(fitxategiakIrakurri())
 adostasunak <- adostasunak(data)
 
 shinyServer(function(input, output) {
-
- output$irr <- renderText({kappam.fleiss(data[, 2:ncol(data)],exact=F,detail=T)$value})
- 
+  kappa.data <- reactive({ kappa2(data[, c(2,3)],weight="squared")})
+  
+#output$irr <- renderPrint({kappam.fleiss(data[, 2:ncol(data)],exact=F,detail=T)})
+ output$irr <- renderPrint({kappa.data()})
+ output$irrPlot <- renderC3Gauge({C3Gauge(kappa.data()$value)})
  output$irakArtean <- renderTable({adostasunak})
 
 })
