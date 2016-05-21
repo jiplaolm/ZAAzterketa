@@ -9,6 +9,7 @@ library(shiny)
 library(C3)
 source("tresnak.R")
 library(shinyjs)
+library(DT)
 #options(shiny.maxRequestSize=5*1024^2) # Igotzeko tamaina igo behar izanez gero
 
 
@@ -37,6 +38,8 @@ shinyServer(function(input, output) {
  output$irr <- renderPrint({kappa.data()})
  output$irrPlot <- renderC3Gauge({C3Gauge(kappa.data()$value)})
  output$irakArtean <- renderTable({adostasun()})
+ 
+ output$datuTaula <- DT::renderDataTable({data()})
  
  # Panelak ezkutatzeko informazioa ez daukagunean
  observeEvent(input$defektuzkoak, {

@@ -10,6 +10,7 @@ library(shiny)
 library(C3)
 library(htmlwidgets)
 library(shinyjs)
+library(DT)
 
 shinyUI(fluidPage(useShinyjs(),
   # Application title
@@ -33,6 +34,8 @@ shinyUI(fluidPage(useShinyjs(),
       # Ariketen inguruko informazioa
       tabPanel("Ariketen informazioa"),
       # Algoritmoka
-      tabPanel("Algoritmo 1")))
+      tabPanel("Hitz bakunekoak"),
+      tabPanel("Hitz anitzekoak"),
+      tabPanel("Datuak", DT::dataTableOutput("datuTaula"))))
     ))
 ))
