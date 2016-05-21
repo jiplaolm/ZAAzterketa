@@ -9,21 +9,30 @@
 library(shiny)
 library(C3)
 library(htmlwidgets)
+library(shinyjs)
 
-shinyUI(fluidPage(
+shinyUI(fluidPage(useShinyjs(),
   # Application title
   titlePanel("Arikiturri: Zientzia ariketak"),
   sidebarLayout(sidebarPanel(## Erabiltzaileak erabili ditzaken aukerak
     helpText(
-      "Aukerak hemen deskribatu"
-    )),
-    mainPanel(tabsetPanel(
+      "Aukeratu datu azterketarako erabili nahi dituzun fitxategiak"
+    ),
+    checkboxInput("defektuzkoak","Erabili gordetako data",T),
+    conditionalPanel("!input.defektuzkoak",
+                     fileInput("fitx", "Aukeratu aztertu nahi duzun data daukaten fitxategiak (gutxienez 2)",
+                               multiple=T,
+                               accept=c("text/csv","text/comma-separated-values",".csv"))
+                     )
+    ),
+    mainPanel(div(id="main",
+      tabsetPanel(
       # Datu azterketa erakusteko
       # Lehenengo panela, irakasleen arteko adostasun informazioa
       tabPanel("Adostasuna",h1("Adostasuna"),fluidRow(column(6,C3GaugeOutput("irrPlot")),column(6,verbatimTextOutput("irr"))), h1("Erabiltzaile artekoa"),tableOutput("irakArtean")),
       # Ariketen inguruko informazioa
       tabPanel("Ariketen informazioa"),
       # Algoritmoka
-      tabPanel("Algoritmo 1")
-    )))
+      tabPanel("Algoritmo 1")))
+    ))
 ))

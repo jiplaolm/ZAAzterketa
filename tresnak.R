@@ -2,8 +2,13 @@
 library(reshape2)
 library(irr)
 
-fitxategiakIrakurri <- function(dir="data") {
-  fitxategiak <- list.files(dir, full.names=T)
+# Shiny aplikazioak gordetzen dituen fitxategiak itzuli
+defektuzkoFitxategiak <- function(dir="data") {
+  return(list.files(dir,full.names = T))
+}
+
+## Fitxategi zerrenda bat emanda, datuak kargatzen ditu
+fitxategiakIrakurri <- function(fitxategiak) {
   data.list <- lapply(fitxategiak, fitxategiaKargatu)
   data <- do.call("rbind",data.list)
   return(data)
@@ -14,7 +19,7 @@ fitxategiaKargatu <- function(fitx,burua=F, bereiz="\t") {
   # Gehitu erabiltzailearen identifikatzailea
   names(data) <- c("Galdera","Balioa")
   erab <- sub(".csv","",basename(fitx))
-  data$Erab <- erab
+  data$Erab <- ifelse(grepl("irak",erab),erab,paste0("irak",erab))
   # Ordena aldatau
   data <- data[,c("Galdera","Erab","Balioa")]
   return(data)
