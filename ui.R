@@ -5,12 +5,8 @@
 #
 # http://shiny.rstudio.com
 #
+source("libs.R")
 
-library(shiny)
-library(C3)
-library(htmlwidgets)
-library(shinyjs)
-library(DT)
 
 shinyUI(fluidPage(useShinyjs(),
   # Application title
@@ -30,12 +26,12 @@ shinyUI(fluidPage(useShinyjs(),
       tabsetPanel(
       # Datu azterketa erakusteko
       # Lehenengo panela, irakasleen arteko adostasun informazioa
-      tabPanel("Adostasuna",h1("Adostasuna"),fluidRow(column(6,C3GaugeOutput("irrPlot")),column(6,verbatimTextOutput("irr"))), h1("Erabiltzaile artekoa"),tableOutput("irakArtean")),
+      tabPanel("Adostasuna",agreementModuleUI("adostasuna")),
       # Ariketen inguruko informazioa
-      tabPanel("Ariketen informazioa"),
+      tabPanel("Ariketen informazioa", arikAzterketaModuleUI("guztiak")),
       # Algoritmoka
-      tabPanel("Hitz bakunekoak"),
-      tabPanel("Hitz anitzekoak"),
+      tabPanel("Hitz bakunekoak", arikAzterketaModuleUI("bakunak")),
+      tabPanel("Hitz anitzekoak", arikAzterketaModuleUI("anitzak")),
       tabPanel("Datuak", DT::dataTableOutput("datuTaula"))))
     ))
 ))

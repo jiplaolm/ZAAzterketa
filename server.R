@@ -5,16 +5,10 @@
 # http://shiny.rstudio.com
 #
 
-library(shiny)
-library(C3)
-source("tresnak.R")
-library(shinyjs)
-library(DT)
-#options(shiny.maxRequestSize=5*1024^2) # Igotzeko tamaina igo behar izanez gero
-
-
+source("libs.R") # Interfaze grafikorak
 
 shinyServer(function(input, output) {
+  ## Datuak - reactive modukoak definitu grafikat etab. egunera daitezen
   fitxategiak <- reactive({
     if (input$defektuzkoak) {
       return(defektuzkoFitxategiak())
@@ -27,19 +21,11 @@ shinyServer(function(input, output) {
   })
   
   data <- reactive({matrizeEgit(fitxategiakIrakurri(fitxategiak()))})
-  adostasun <- reactive({adostasunak(data())})
+
   
-  
-  kappa.data <- reactive({ 
-    matrix <- data()
-    kappa2(matrix[, c(2,3)],weight="squared")})
-  
-#output$irr <- renderPrint({kappam.fleiss(data[, 2:ncol(data)],exact=F,detail=T)})
- output$irr <- renderPrint({kappa.data()})
- output$irrPlot <- renderC3Gauge({C3Gauge(kappa.data()$value)})
- output$irakArtean <- renderTable({adostasun()})
- 
- output$datuTaula <- DT::renderDataTable({data()})
+  ## Lotu interfazea datu azterketarekin
+  callModule(agreementModule, "adostasuna", data)
+  output$datuTaula <- DT::renderDataTable({data()})
  
  # Panelak ezkutatzeko informazioa ez daukagunean
  observeEvent(input$defektuzkoak, {
