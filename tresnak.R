@@ -1,5 +1,5 @@
-#library(dplyr)
-library(reshape2)
+library(dplyr)
+library(tidyr)
 library(irr)
 
 # Shiny aplikazioak gordetzen dituen fitxategiak itzuli
@@ -11,27 +11,38 @@ defektuzkoFitxategiak <- function(dir="data") {
 fitxategiakIrakurri <- function(fitxategiak) {
   data.list <- lapply(fitxategiak, fitxategiaKargatu)
   data <- do.call("rbind",data.list)
+  data <- data %>% mutate(
+    Ariketa = as.numeric(Ariketa),
+    Galdera = as.numeric(Galdera)
+    )
   return(data)
 }
 
 
 ## Egokitu beharko da fitxategiaren egitura aldatzen da eta!!!!!
 ## Fitxategi baten edukia fitratu
-fitxategiaKargatu <- function(fitx,burua=F, bereiz="\t") {
+fitxategiaKargatu <- function(fitx,burua=T, bereiz="\t") {
   data <- read.csv(fitx, header=burua, sep="\t")
-  # Gehitu erabiltzailearen identifikatzailea
-  names(data) <- c("Galdera","Balioa")
-  erab <- sub(".csv","",basename(fitx))
-  data$Erab <- ifelse(grepl("irak",erab),erab,paste0("irak",erab))
-  # Ordena aldatau
-  data <- data[,c("Galdera","Erab","Balioa")]
-  return(data)
+  garbituta <-data %>% select(Curso,starts_with("Q")) %>%
+    extract(Curso,c("Irak"),"[[:alpha:]]+([[:digit:]]+)-[[:alpha:]]+")  %>% 
+    mutate(Irak=paste0("Irak",Irak)) %>%
+    gather(Gakoa,Balioa,-Irak) %>%
+    extract(Gakoa,c("Ariketa","Mota","Galdera","Distraigarria"), "[[:alnum:]]+_ARIK_([[:digit:]]+)_([[:alpha:]]+)_([[:digit:]]+)[..]*(.*)")
+  
+  return(garbituta)
 }
 
 # Dataset luze batetik, zabalera pasa
 # Egokitu beharko dugu datu-egitura berrira
 matrizeEgit <- function(data) {
-  return (dcast(data,Galdera~Erab))
+  emaitza <- data %>% spread(Irak, Balioa)
+  return (emaitza)
+}
+
+
+# Aukeratu ebaluazioak dauzkaten zutabeak
+aukeratuEbaluazioZutabeak <- function(data){
+  return(select(data,starts_with("Irak")))
 }
 
 
@@ -43,7 +54,7 @@ filtratuBalorazioakAdostarunerako <- function(data) {
 
 ## Balorazioak matrize egitura batean izanda, adostasuna kalkulatzen du
 adostasunak <- function(data) {
-  data <- data[,-1]
+  data <- data[,-c(1:4)]
   irakasleak <- colnames(data)
   probak <- combn(irakasleak,m=2, simplify=F)
   

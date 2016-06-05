@@ -20,12 +20,38 @@ shinyServer(function(input, output) {
     }
   })
   
-  data <- reactive({matrizeEgit(fitxategiakIrakurri(fitxategiak()))})
-
+  ## Datuak prestatu
+  datuGuztiak <- reactive({fitxategiakIrakurri(fitxategiak())})
+  
+  oharrak <- reactive({
+    select(filter(subset(datuGuztiak(),Galdera==4),!is.na(Balioa)),-Galdera,-Distraigarria)
+    })
+  
+  data <- reactive({
+    mutate(filter(datuGuztiak(),Galdera!=4), Balioa=as.numeric(Balioa))
+  })
+  dataTaula <- reactive({matrizeEgit(data())})
+  
+  dataAgreement <- reactive({
+    datuak<-filter(data(),Ariketa <= 20)
+    matrizeEgit(datuak)
+  })
+  
+  dataAriketak <- reactive({filter(data(),Ariketa>20)})
+  
+  
+  dataAriketaBakunak <- reactive({filter(dataAriketak(),Mota =="BAK")})
+  
+  dataAriketaAnitzak <- reactive({filter(dataAriketak(),Mota =="ANI")})
   
   ## Lotu interfazea datu azterketarekin
-  callModule(agreementModule, "adostasuna", data)
-  output$datuTaula <- DT::renderDataTable({data()})
+  callModule(agreementModule, "adostasuna", dataAgreement)
+  callModule(arikAzterketaModule,"guztiak",dataAriketak)
+  callModule(arikAzterketaModule,"bakunak",dataAriketaBakunak)
+  callModule(arikAzterketaModule,"anitzak",dataAriketaAnitzak)
+  callModule(taulaModule,"datuak",dataTaula)
+  callModule(taulaModule,"oharrak",oharrak)
+  
  
  # Panelak ezkutatzeko informazioa ez daukagunean
  observeEvent(input$defektuzkoak, {

@@ -29,9 +29,10 @@ shinyUI(fluidPage(useShinyjs(),
       tabPanel("Adostasuna",agreementModuleUI("adostasuna")),
       # Ariketen inguruko informazioa
       tabPanel("Ariketen informazioa", arikAzterketaModuleUI("guztiak")),
-      # Algoritmoka
+      # Ariketa motaka
       tabPanel("Hitz bakunekoak", arikAzterketaModuleUI("bakunak")),
       tabPanel("Hitz anitzekoak", arikAzterketaModuleUI("anitzak")),
-      tabPanel("Datuak", DT::dataTableOutput("datuTaula"))))
+      tabPanel("Datuak", taulaModuleUI("datuak")),
+      tabPanel("Oharrak", taulaModuleUI("oharrak")))
     ))
-))
+)))
