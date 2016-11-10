@@ -24,7 +24,7 @@ fitxategiakIrakurri <- function(fitxategiak) {
 fitxategiaKargatu <- function(fitx,burua=T, bereiz="\t") {
   data <- read.csv(fitx, header=burua, sep="\t")
   garbituta <-data %>% select(Curso,starts_with("Q")) %>%
-    extract(Curso,c("Irak"),"[[:alpha:]]+([[:digit:]]+)-[[:alpha:]]+")  %>% 
+    extract(Curso,c("Irak"),"[[:alpha:]]+ [[:alpha:]]+ - [[:alpha:]]+ ([[:digit:]]+)")  %>% 
     mutate(Irak=paste0("Irak",Irak)) %>%
     gather(Gakoa,Balioa,-Irak) %>%
     extract(Gakoa,c("Ariketa","Mota","Galdera","Distraigarria"), "[[:alnum:]]+_ARIK_([[:digit:]]+)_([[:alpha:]]+)_([[:digit:]]+)[..]*(.*)")

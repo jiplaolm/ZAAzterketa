@@ -7,22 +7,25 @@ agreementViewModuleUI <- function(id, testua) {
   tagList(
     h3(testua),
     fluidRow(
-      column(6,C3GaugeOutput(ns("irrPlot"))),
-      column(6,verbatimTextOutput(ns("irr")))
+      column(4,C3GaugeOutput(ns("irrPlot"))),
+      column(4,verbatimTextOutput(ns("irr"))),
+      column(4,taulaModuleUI(ns("agrData")))
     )
   )
 }
 
 ## Zerbitzariari lotutako kodea
 agreementViewModule <- function(input, output, session, data) {
+  ag.datuak <- reactive({
+    mat <- data()
+    filtratuBalorazioakAdostarunerako(aukeratuEbaluazioZutabeak(mat))
+  })
   
   kappa.data <- reactive({ 
-    mat <- data()
-
-    ag.datuak <- filtratuBalorazioakAdostarunerako(aukeratuEbaluazioZutabeak(mat))
-    kappa2(ag.datuak,weight = "squared")
+    kappa2(ag.datuak(),weight = "squared")
     })
   
   output$irr <- renderPrint({kappa.data()})##
   output$irrPlot <- renderC3Gauge({C3Gauge(round(kappa.data()$value,2))})
+  callModule(taulaModule,"agrData", ag.datuak)
 }
