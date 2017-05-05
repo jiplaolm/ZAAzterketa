@@ -6,11 +6,16 @@ agreementViewModuleUI <- function(id, testua) {
   
   tagList(
     h3(testua),
+    h4("Kappa"),
     fluidRow(
       column(4,C3GaugeOutput(ns("irrPlot"))),
       column(4,verbatimTextOutput(ns("irr"))),
       column(4,taulaModuleUI(ns("agrData")))
-    )
+    ),
+    h4("Adostasun portzentaia"),
+    fluidRow(
+      column(4,C3GaugeOutput(ns("percPlot"))),
+      column(4,verbatimTextOutput(ns("perc"))))
   )
 }
 
@@ -25,7 +30,15 @@ agreementViewModule <- function(input, output, session, data) {
     kappa2(ag.datuak(),weight = "squared")
     })
   
+  ados.portz <- reactive({
+    erantzunak <- ag.datuak()
+    erantzunak$ados <- erantzunak[,1]==erantzunak[,2]
+    data.frame(Percentage=sum(erantzunak$ados)/length(erantzunak$ados))
+  })
+  
   output$irr <- renderPrint({kappa.data()})##
+  output$perc <- renderPrint({ados.portz()})
   output$irrPlot <- renderC3Gauge({C3Gauge(round(kappa.data()$value,2))})
+  output$percPlot <- renderC3Gauge({C3Gauge(round(ados.portz()$Percentage,2))})
   callModule(taulaModule,"agrData", ag.datuak)
 }
