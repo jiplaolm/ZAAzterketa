@@ -1,6 +1,3 @@
-library(dplyr)
-library(tidyr)
-library(irr)
 
 # Shiny aplikazioak gordetzen dituen fitxategiak itzuli
 defektuzkoFitxategiak <- function(dir="data") {

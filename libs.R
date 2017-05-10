@@ -4,11 +4,15 @@ library(C3)
 library(htmlwidgets)
 library(shinyjs)
 library(DT)
+library(plyr)
 library(dplyr)
 library(tidyr)
 library(likert)
-library(plyr)
 library(reshape2)
+#library(irr)
+library(rel)
+
+
 #options(shiny.maxRequestSize=5*1024^2) # Igotzeko tamaina igo behar izanez gero
 
 # Beste funtzionalitatea kargatu
