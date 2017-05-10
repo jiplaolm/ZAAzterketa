@@ -9,7 +9,7 @@ library(dplyr)
 library(tidyr)
 library(likert)
 library(reshape2)
-#library(irr)
+library(irr)
 library(rel)
 
 
