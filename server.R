@@ -6,6 +6,7 @@
 #
 
 source("libs.R") # Interfaze grafikorak
+theme_set(theme_bw(base_size=14)) # Theme zehaztu
 
 shinyServer(function(input, output) {
   ## Datuak - reactive modukoak definitu grafikat etab. egunera daitezen
@@ -39,6 +40,19 @@ shinyServer(function(input, output) {
   
   dataAriketak <- reactive({filter(data(),Ariketa>20)})
   
+  dataDistrAdostasuna <- reactive({
+     ados.datuak <- filter(dataAgreement(), Galdera == 3)
+     ados.datuak.list <- split(ados.datuak, ados.datuak$Ariketa)
+
+     ## kalkutatu adostasunak
+     emaitzak.list <- lapply(ados.datuak.list, function(x) gwetAdostasuna(filtratuBalorazioakAdostarunerako(aukeratuEbaluazioZutabeak(x))))
+     ## Gorde emaitzak data.frame batean
+     emaitzak.df <- do.call(rbind.data.frame, emaitzak.list)
+     emaitzak.df$Ariketa <- row.names(emaitzak.df)
+     colnames(emaitzak.df) <- c("Adostasuna", "Ariketa")
+     emaitzak.df %>% select(Ariketa, Adostasuna)
+  })
+  
   
   dataAriketaBakunak <- reactive({filter(dataAriketak(),Mota =="BAK")})
   
@@ -46,6 +60,8 @@ shinyServer(function(input, output) {
   
   ## Lotu interfazea datu azterketarekin
   callModule(agreementModule, "adostasuna", dataAgreement)
+  ## Hau agian mugituko dut
+  callModule(exerciseAgreementViewModule, "hobetua", dataDistrAdostasuna)
   callModule(arikAzterketaModule,"guztiak",dataAriketak)
   callModule(arikAzterketaModule,"bakunak",dataAriketaBakunak)
   callModule(arikAzterketaModule,"anitzak",dataAriketaAnitzak)

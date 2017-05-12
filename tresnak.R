@@ -50,6 +50,7 @@ filtratuBalorazioakAdostarunerako <- function(data) {
 }
 
 ## Balorazioak matrize egitura batean izanda, adostasuna kalkulatzen du
+## Egiteko - matrize batean neurri guztiak?
 adostasunak <- function(data) {
   data <- data[,-c(1:4)]
   irakasleak <- colnames(data)
@@ -62,4 +63,9 @@ adostasunak <- function(data) {
   emaitzak <- as.matrix(emaitzak)
   colnames(emaitzak) <- c("Adostasuna")
   return(emaitzak)
+}
+
+## Gwet-en neurria
+gwetAdostasuna <- function(data) {
+  return (gac(data, kat=4, weight = "quadratic")$est)
 }
