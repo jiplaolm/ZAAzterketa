@@ -40,33 +40,61 @@ shinyServer(function(input, output) {
   
   dataAriketak <- reactive({filter(data(),Ariketa>20)})
   
-  dataDistrAdostasuna <- reactive({
-     ados.datuak <- filter(dataAgreement(), Galdera == 3)
-     ados.datuak.list <- split(ados.datuak, ados.datuak$Ariketa)
-
-     ## kalkutatu adostasunak
-     emaitzak.list <- lapply(ados.datuak.list, function(x) gwetAdostasuna(filtratuBalorazioakAdostarunerako(aukeratuEbaluazioZutabeak(x))))
-     ## Gorde emaitzak data.frame batean
-     emaitzak.df <- do.call(rbind.data.frame, emaitzak.list)
-     emaitzak.df$Ariketa <- row.names(emaitzak.df)
-     colnames(emaitzak.df) <- c("Adostasuna", "Ariketa")
-     emaitzak.df %>% select(Ariketa, Adostasuna)
+  galdera.motak <- reactive({filter(data(), Galdera==1) %>% distinct(Ariketa, Mota)})
+  
+  adostasunDatuak <- reactive({
+    ados.datuak <- filter(data(), Ariketa<=20, Galdera != 4)
+    #
+    kalkulatuAriketenGwetAdostasunak(ados.datuak)
+    #ados.datuak
   })
   
+  dataDistrAdostasuna <- reactive({
+   # 
+    adostasun.info <- filter(adostasunDatuak(), Galdera == 3) %>% select(Ariketa, Adostasuna)
+     
+     ## Gehitu Galdera mota eta oharrak
+     ariketa.motak <- filter(galdera.motak(),Ariketa <= 20)
+     adostasun.info <- merge(adostasun.info, ariketa.motak,by= "Ariketa")
+     
+     # Oharrak izan dituztenak
+     agr.oharrak <- filter(oharrak(),Ariketa <=20) %>% distinct(Ariketa)
+     adostasun.info$Oharrak <- adostasun.info$Ariketa %in% agr.oharrak$Ariketa
+     
+     adostasun.info
+  })
+  
+  dataDistrAdostasunaAberastua <- reactive({
+    list(data= dataDistrAdostasuna(), oharrak = filter(oharrak(), Ariketa<=20), balorazioak=filter(datuGuztiak(), Galdera==3, Ariketa<=20) %>% select(Irak, Ariketa, Mota, Balioa))
+  })
   
   dataAriketaBakunak <- reactive({filter(dataAriketak(),Mota =="BAK")})
   
   dataAriketaAnitzak <- reactive({filter(dataAriketak(),Mota =="ANI")})
   
+  irakasleenAgreementak <- reactive({
+    irakArik <- filter(datuGuztiak(), Ariketa <=20, Galdera!=4) %>% distinct(Irak, Ariketa,Galdera)
+    irakArikAdos <- merge(irakArik, adostasunDatuak(), by=c("Ariketa", "Galdera"))
+    irakAdosMaila <- irakArikAdos %>% group_by(Irak, Galdera) %>% summarize(Adostasuna=mean(Adostasuna))
+    irakAdosMaila
+  })
+  
+  irakasleenDatuak <- reactive({
+    irakasleen.balorazioak <- datuGuztiak() %>% filter(Galdera != 4)
+    irakasleenDatuak <- merge(irakasleen.balorazioak, irakasleenAgreementak(), by=c("Irak","Galdera"))
+    irakasleenDatuak
+  })
+  
   ## Lotu interfazea datu azterketarekin
   callModule(agreementModule, "adostasuna", dataAgreement)
   ## Hau agian mugituko dut
-  callModule(exerciseAgreementViewModule, "hobetua", dataDistrAdostasuna)
+  callModule(exerciseAgreementViewModule, "hobetua", dataDistrAdostasunaAberastua)
   callModule(arikAzterketaModule,"guztiak",dataAriketak)
   callModule(arikAzterketaModule,"bakunak",dataAriketaBakunak)
   callModule(arikAzterketaModule,"anitzak",dataAriketaAnitzak)
   callModule(taulaModule,"datuak",dataTaula)
   callModule(taulaModule,"oharrak",oharrak)
+  callModule(raterMonitoringViewModule,"irakasleak",irakasleenDatuak)
   
  
  # Panelak ezkutatzeko informazioa ez daukagunean

@@ -69,3 +69,34 @@ adostasunak <- function(data) {
 gwetAdostasuna <- function(data) {
   return (gac(data, kat=4, weight = "quadratic")$est)
 }
+
+
+## KalkulatuGwetAdostasuna
+kalkulatuGwetAdostasuna <- function(data) {
+  data.mat <- matrizeEgit(data)
+  return (gwetAdostasuna(filtratuBalorazioakAdostarunerako(aukeratuEbaluazioZutabeak(data.mat))))
+}
+
+kalkulatuAriketenGalderarenGwetAdostasuna <- function(data, galdera) {
+  ados.datuak.list <- split(data, data$Ariketa)
+  
+  ## kalkutatu adostasunak
+  emaitzak.list <- lapply(ados.datuak.list, kalkulatuGwetAdostasuna)
+  ## Gorde emaitzak data.frame batean
+  emaitzak.df <- do.call(rbind.data.frame, emaitzak.list)
+  emaitzak.df$Ariketa <- row.names(emaitzak.df)
+  colnames(emaitzak.df) <- c("Adostasuna", "Ariketa")
+  emaitzak.df$Galdera <- galdera
+  return (emaitzak.df %>% select(Ariketa,Galdera, Adostasuna))
+}
+
+kalkulatuAriketenGwetAdostasunak <-  function(data) {
+  data.list <- split(data, data$Galdera)
+  galderak <- names(data.list)
+  emaitza <- lapply(galderak, function(x) kalkulatuAriketenGalderarenGwetAdostasuna(data.list[[x]] , x))
+  emaitza.df <- do.call(rbind.data.frame, emaitza)
+  emaitza.df$Galdera <- as.numeric(emaitza.df$Galdera)
+  return(emaitza.df)
+
+}
+

@@ -36,6 +36,8 @@ shinyUI(fluidPage(useShinyjs(),
       tabPanel("Hitz bakunekoak", arikAzterketaModuleUI("bakunak")),
       tabPanel("Hitz anitzekoak", arikAzterketaModuleUI("anitzak")),
       tabPanel("Datuak", taulaModuleUI("datuak")),
-      tabPanel("Oharrak", taulaModuleUI("oharrak")))
+      tabPanel("Oharrak", taulaModuleUI("oharrak")),
+      tabPanel("Ebaluatzaileak", raterMonitoringViewModuleUI("irakasleak","Irakasleen balorazioen azterketa"))
+      )
     ))
 )))
