@@ -18,15 +18,15 @@ arikGaldAzterketaModule<- function(input, output, session, data) {
   likert.data <- reactive({
     datuak <- data()
     datuak$Balioa <- factor(datuak$Balioa, levels = 1:4,
-                            labels = c("Gustiz kontra",
+                            labels = c("Guztiz kontra",
                                        "Ez oso ados", 
                                        "Nahiko ados",
-                                       "Gustiz ados"))
+                                       "Guztiz ados"))
     likert(items=datuak[,6,drop=F])
   })
   output$testua <- renderPrint(likert.data())
   output$plot <- renderPlot({
-    plot <- plot(likert.data(),plot.percents=T)
+    plot <- likert.bar.plot(likert.data(),plot.percents=T, legend="Erantzuna") + ylab("Portzentaia")
     LHS <- 2
     RHS <- 3
     if (sum(is.na(plot$layers[[LHS]]$data$Item))>0) plot$layers <- plot$layers[-LHS]
