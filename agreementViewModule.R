@@ -45,8 +45,8 @@ agreementViewModule <- function(input, output, session, data) {
   
   ados.portz <- reactive({
     erantzunak <- ag.datuak()
-    erantzunak$ados <- erantzunak[,1]==erantzunak[,2]
-    data.frame(Percentage=sum(erantzunak$ados)/length(erantzunak$ados))
+    ados <- erantzunak[,1]==erantzunak[,2]
+    data.frame(Percentage=sum(ados)/length(ados))
   })
   
   output$irr <- renderPrint({kappa.data()})##

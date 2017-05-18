@@ -100,3 +100,34 @@ kalkulatuAriketenGwetAdostasunak <-  function(data) {
 
 }
 
+## Kalkulatu bat etorzea
+kalkulatuAriketarenBatEtortzea <- function(data) {
+  data.mat <- matrizeEgit(data)
+  ebaluazio.datuak <- filtratuBalorazioakAdostarunerako(aukeratuEbaluazioZutabeak(data.mat))
+  bateratzeak <-ebaluazio.datuak[,1]==ebaluazio.datuak[,2] 
+  
+  return (sum(bateratzeak)/length(bateratzeak))
+}
+
+kalkulatuAriketenGalderarenBatEtortzea <- function(data, galdera) {
+  ados.datuak.list <- split(data, data$Ariketa)
+  
+  ## kalkutatu adostasunak
+  emaitzak.list <- lapply(ados.datuak.list, kalkulatuAriketarenBatEtortzea)
+  ## Gorde emaitzak data.frame batean
+  emaitzak.df <- do.call(rbind.data.frame, emaitzak.list)
+  emaitzak.df$Ariketa <- row.names(emaitzak.df)
+  colnames(emaitzak.df) <- c("BatEtortzea", "Ariketa")
+  emaitzak.df$Galdera <- galdera
+  return (emaitzak.df %>% select(Ariketa,Galdera, BatEtortzea))
+}
+
+kalkulatuBatEtortzeak <-  function(data) {
+  data.list <- split(data, data$Galdera)
+  galderak <- names(data.list)
+  emaitza <- lapply(galderak, function(x) kalkulatuAriketenGalderarenBatEtortzea(data.list[[x]] , x))
+  emaitza.df <- do.call(rbind.data.frame, emaitza)
+  emaitza.df$Galdera <- as.numeric(emaitza.df$Galdera)
+  return(emaitza.df)
+  
+}

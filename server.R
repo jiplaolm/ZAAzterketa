@@ -56,9 +56,19 @@ shinyServer(function(input, output) {
     batazbestekoBalorazioak
   })
   
+  dataBatEtorri <- reactive( {
+    ados.datuak <- filter(data(), Ariketa<=20, Galdera != 4)
+    #
+    kalkulatuBatEtortzeak(ados.datuak)
+  })
+  
   dataDistrAdostasuna <- reactive({
    # 
     adostasun.info <- filter(adostasunDatuak(), Galdera == 3) %>% select(Ariketa, Adostasuna)
+    
+    ## Gehitu bat etortzea
+    bat.etortzea <- filter(dataBatEtorri(), Galdera==3)
+    adostasun.info <- merge(adostasun.info,bat.etortzea, by="Ariketa")
      
      ## Gehitu Galdera mota eta oharrak
      ariketa.motak <- filter(galdera.motak(),Ariketa <= 20)
