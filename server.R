@@ -49,6 +49,13 @@ shinyServer(function(input, output) {
     #ados.datuak
   })
   
+  
+  dataBatazbestekoa <- reactive({
+    balorazioak <- filter(data(), Ariketa <=20, Galdera ==3)
+    batazbestekoBalorazioak <- balorazioak %>% group_by(Ariketa) %>% summarise(Batazbestekoa =mean(Balioa))
+    batazbestekoBalorazioak
+  })
+  
   dataDistrAdostasuna <- reactive({
    # 
     adostasun.info <- filter(adostasunDatuak(), Galdera == 3) %>% select(Ariketa, Adostasuna)
@@ -57,11 +64,21 @@ shinyServer(function(input, output) {
      ariketa.motak <- filter(galdera.motak(),Ariketa <= 20)
      adostasun.info <- merge(adostasun.info, ariketa.motak,by= "Ariketa")
      
-     # Oharrak izan dituztenak
-     agr.oharrak <- filter(oharrak(),Ariketa <=20) %>% distinct(Ariketa)
-     adostasun.info$Oharrak <- adostasun.info$Ariketa %in% agr.oharrak$Ariketa
+     ## Gehitu batazbesteko balorazioa
+     batazbesteko.balorazioa <- dataBatazbestekoa()
+     adostasun.info <- merge(adostasun.info, batazbesteko.balorazioa, by="Ariketa")
      
+     # Oharrak izan dituztenak
+     agr.oharrak <- filter(oharrak(),Ariketa <=20, !is.na(Balioa)) %>% group_by(Ariketa) %>% summarise(OharKopurua=n())
+
+     adostasun.info<- merge(adostasun.info, agr.oharrak, by="Ariketa", all.x=T)
+     adostasun.info$OharKopurua[is.na(adostasun.info$OharKopurua)] <- 0
+     
+     
+     
+     #
      adostasun.info
+    #agr.oharrak
   })
   
   dataDistrAdostasunaAberastua <- reactive({
@@ -71,6 +88,8 @@ shinyServer(function(input, output) {
   dataAriketaBakunak <- reactive({filter(dataAriketak(),Mota =="BAK")})
   
   dataAriketaAnitzak <- reactive({filter(dataAriketak(),Mota =="ANI")})
+  
+  
   
   irakasleenAgreementak <- reactive({
     irakArik <- filter(datuGuztiak(), Ariketa <=20, Galdera!=4) %>% distinct(Irak, Ariketa,Galdera)
