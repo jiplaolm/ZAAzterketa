@@ -7,23 +7,32 @@ agreementViewModuleUI <- function(id, testua) {
   tagList(
     h3(testua),
     fluidRow(
-      column(8, 
+      column(7, 
         h4("Kappa"),
         fluidRow(
           column(4,C3GaugeOutput(ns("irrPlot"))),
-          column(4,verbatimTextOutput(ns("irr")))
+          column(3,verbatimTextOutput(ns("irr")))
         ),
         h4("Gwet's AC"),
         fluidRow(
           column(4,C3GaugeOutput(ns("gwetPlot"))),
-          column(4,verbatimTextOutput(ns("gwetScore")))),
+          column(3,verbatimTextOutput(ns("gwetScore")))),
         h4("Adostasun portzentaia"),
         fluidRow(
           column(4,C3GaugeOutput(ns("percPlot"))),
-          column(4,verbatimTextOutput(ns("perc")))),
-        h4("Datuak")),
+          column(3,verbatimTextOutput(ns("perc"))))
+        ),
+       
     
-      column(4,taulaModuleUI(ns("agrData")))
+      column(5, 
+             h4 ("Balorazioak"),
+             fluidRow(
+                    plotOutput(ns("balPlot"))
+            ),
+            h4 ("Datuak"),
+            fluidRow(
+                taulaModuleUI(ns("agrData")))
+            )
     )
   )
 }
@@ -33,6 +42,15 @@ agreementViewModule <- function(input, output, session, data) {
   ag.datuak <- reactive({
     mat <- data()
     filtratuBalorazioakAdostarunerako(aukeratuEbaluazioZutabeak(mat))
+  })
+  
+  ag.datuak.mat <- reactive({
+    mat <- ag.datuak()
+    mat.df <- as.data.frame(mat)
+    cols <- colnames(mat.df)
+    ## TODO - bukatu
+    mat.df[cols] <- lapply(mat.df[cols], function(x) factor(x, levels=c("1","2","3","4")))
+    table(mat.df)
   })
   
   kappa.data <- reactive({ 
@@ -55,5 +73,12 @@ agreementViewModule <- function(input, output, session, data) {
   output$irrPlot <- renderC3Gauge({C3Gauge(round(kappa.data()$value,2))})
   output$percPlot <- renderC3Gauge({C3Gauge(round(ados.portz()$Percentage,2))})
   output$gwetPlot <- renderC3Gauge({C3Gauge(round(gwet()$Gwet,2))})
+  output$balPlot <- renderPlot({
+    bal.data <- melt(ag.datuak.mat())
+    ggplot(bal.data, aes(x=V1, y=V2)) +
+      geom_tile(aes(fill=value)) +
+      scale_fill_gradient(name="Kopurua", low="white")
+  })
+
   callModule(taulaModule,"agrData", ag.datuak)
 }

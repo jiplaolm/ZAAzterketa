@@ -38,6 +38,17 @@ shinyServer(function(input, output) {
     matrizeEgit(datuak)
   })
   
+  dataAgreementBakunak <- reactive({
+    datuak<-filter(data(),Ariketa <= 20, Mota=="BAK")
+    matrizeEgit(datuak)
+  })
+  
+  dataAgreementAnitzak <- reactive({
+    datuak<-filter(data(),Ariketa <= 20,Mota =="ANI")
+    matrizeEgit(datuak)
+  })
+  
+  
   dataAriketak <- reactive({filter(data(),Ariketa>20)})
   
   galdera.motak <- reactive({filter(data(), Galdera==1) %>% distinct(Ariketa, Mota)})
@@ -115,7 +126,9 @@ shinyServer(function(input, output) {
   })
   
   ## Lotu interfazea datu azterketarekin
-  callModule(agreementModule, "adostasuna", dataAgreement)
+  callModule(agreementModule, "adostasuna", dataAgreement) 
+  callModule(agreementModule, "adostasunaBakunak", dataAgreementBakunak) 
+  callModule(agreementModule, "adostasunaAnitzak", dataAgreementAnitzak)
   ## Hau agian mugituko dut
   callModule(exerciseAgreementViewModule, "hobetua", dataDistrAdostasunaAberastua)
   callModule(arikAzterketaModule,"guztiak",dataAriketak)

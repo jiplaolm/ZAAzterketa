@@ -28,6 +28,10 @@ shinyUI(fluidPage(useShinyjs(),
       # Datu azterketa erakusteko
       # Lehenengo panela, irakasleen arteko adostasun informazioa
       tabPanel("Adostasuna",agreementModuleUI("adostasuna")),
+      # irakasleen arteko adostasun informazioa bakunetan
+      tabPanel("Adostasuna Bakunak",agreementModuleUI("adostasunaBakunak")), 
+      # Lehenengo panela, irakasleen arteko adostasun anitzetan
+      tabPanel("Adostasuna Anitzak",agreementModuleUI("adostasunaAnitzak")),
       # Ariketa mailako distraigarrien adostasuna
       tabPanel("Distraigarrien Adostasuna hobetua",exerciseAgreementViewModuleUI("hobetua", "Distraigarrien informazioa hobetua")),
       # Ariketen inguruko informazioa
