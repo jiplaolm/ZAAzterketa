@@ -22,7 +22,7 @@ arikGaldAzterketaModule<- function(input, output, session, data) {
                                        "Ez oso ados", 
                                        "Nahiko ados",
                                        "Guztiz ados"))
-    likert(items=datuak[,6,drop=F])
+    likert(items=datuak[,"Balioa",drop=F])
   })
   output$testua <- renderPrint(likert.data())
   output$plot <- renderPlot({
