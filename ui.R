@@ -21,7 +21,15 @@ shinyUI(fluidPage(useShinyjs(),
                      fileInput("fitx", "Aukeratu aztertu nahi duzun data daukaten fitxategiak (gutxienez 2)",
                                multiple=T,
                                accept=c("text/csv","text/comma-separated-values",".csv"))
-                     )
+                     ),
+      helpText("Aukeratu aztertutako ariketen informazioa jasotzen duen fitxategia"),
+      checkboxInput("defektuzkoInformazioa", "Erabili gordetako datuak", T),
+      conditionalPanel("!input.defektuzkoInformazioa",
+                     fileInput("fitxInfo", "Aukeratu aztertutako informazioa jasotzen duen fitxategia",
+                               multiple=F,
+                               accept=c("text/csv","text/comma-separated-values",".csv"))
+    )
+      
     ),
     mainPanel(div(id="main",
       tabsetPanel(

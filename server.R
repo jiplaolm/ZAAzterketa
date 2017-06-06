@@ -9,6 +9,40 @@ source("libs.R") # Interfaze grafikorak
 theme_set(theme_bw(base_size=14)) # Theme zehaztu
 
 shinyServer(function(input, output) {
+  
+  # Datuak prest?
+  fitxategiak.prest <- reactive({
+    if (input$defektuzkoak) {
+      return(T)
+    }
+    else {
+      files <- input$fitx
+      if(is.null(files)||nrow(files)<2) {
+        return(F)
+      }
+      else{
+        return(T)
+      }
+    }
+  })
+  
+  ariketenInfo.prest <- reactive({
+    if (input$defektuzkoInformazioa) {
+      return(T)
+    }
+    else {
+      files <- input$fitxInfo
+      if(is.null(files)||nrow(files)!=1) {
+        return(F)
+      }
+      else{
+        return(T)
+      }
+    }
+  })
+  
+  
+  
   ## Datuak - reactive modukoak definitu grafikat etab. egunera daitezen
   fitxategiak <- reactive({
     if (input$defektuzkoak) {
@@ -21,8 +55,37 @@ shinyServer(function(input, output) {
     }
   })
   
-  ## Datuak prestatu
-  datuGuztiak <- reactive({fitxategiakIrakurri(fitxategiak())})
+  ## 
+  ariketenInfoFitxategia <- reactive({
+    if (input$defektuzkoInformazioa) {
+      return (defektuzkoInfoFitxategiak())
+    }
+    else {
+      req(input$fitxInfo)
+      req(nrow(input$fitxInfo)==1)
+      return(input$fitxInfo$datapath)
+    }
+    
+  })
+  
+  ariketenInformazioa <- reactive({
+    infoFitxategiakIrakurri(ariketenInfoFitxategia())
+  })
+  
+  
+  ## Datuak prestatu - Egokituta (Motak eta heuristikoa informazio fitxategitik jasota)
+  datuGuztiak <- reactive({
+    data <- fitxategiakIrakurri(fitxategiak())
+    ## Ezabatu mota eta gehitu ariketen informaziotik jasotako mota eta erabilitako heuristikoa
+    #
+    data <- data %>% select(-Mota)
+    data <- merge(data, ariketenInformazioa(), by="Ariketa")
+    
+    return(data)
+  })
+  
+
+  
   
   oharrak <- reactive({
     select(filter(subset(datuGuztiak(),Galdera==4),!is.na(Balioa)),-Galdera,-Distraigarria)
@@ -141,16 +204,20 @@ shinyServer(function(input, output) {
  
  # Panelak ezkutatzeko informazioa ez daukagunean
  observeEvent(input$defektuzkoak, {
-   if (input$defektuzkoak){
+   if (fitxategiak.prest() & ariketenInfo.prest()){
      show("main")
    }
    else {
-     files <- input$fitx
-     if(is.null(files)||nrow(files)<2) {
-       hide("main")}
-     else{
-       show("main")
-       }
+     hide("main")
+   }
+ })
+ 
+ observeEvent(input$defektuzkoInformazioa, {
+   if (fitxategiak.prest() & ariketenInfo.prest()){
+     show("main")
+   }
+   else {
+     hide("main")
    }
  })
  
@@ -163,4 +230,14 @@ shinyServer(function(input, output) {
    }
  })
 
+ 
+ observeEvent(input$fitxInfo, {
+   files <- input$fitxInfo
+   if(is.null(files)||nrow(files)!=1) {
+     hide("main")}
+   else{
+     show("main")
+   }
+ })
+ 
 })

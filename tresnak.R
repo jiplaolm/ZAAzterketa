@@ -4,6 +4,36 @@ defektuzkoFitxategiak <- function(dir="data") {
   return(list.files(dir,full.names = T))
 }
 
+# Shiny aplikazioak gordetzen dituen informazio fitxategiak itzuli
+defektuzkoInfoFitxategiak <- function(dir="exerciseData") {
+  return(list.files(dir,full.names = T))
+}
+
+
+
+## Informazio fitxategi zerrenda bat emanda, datuak kargatzen ditu
+infoFitxategiakIrakurri <- function(fitxategiak) {
+  data.list <- lapply(fitxategiak, infoFitxategiaKargatu)
+  data <- do.call("rbind",data.list)
+  data <- data %>% mutate(
+    Ariketa = as.numeric(Ariketa)
+  )
+  return(data)
+}
+
+
+## Egokitu beharko da fitxategiaren egitura aldatzen da eta!!!!!
+## Fitxategi baten edukia fitratu
+infoFitxategiaKargatu <- function(fitx,burua=T, bereiz="\t") {
+  data <- read.csv(fitx, header=burua, sep="\t")
+  garbituta <-data %>%
+    separate(Ariketa,c("IZ", "Ariketa", "Mota")) %>%
+    select(Ariketa, Mota, Heuristikoa)
+  return(garbituta)
+}
+
+
+
 ## Fitxategi zerrenda bat emanda, datuak kargatzen ditu
 fitxategiakIrakurri <- function(fitxategiak) {
   data.list <- lapply(fitxategiak, fitxategiaKargatu)
