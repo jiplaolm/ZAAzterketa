@@ -5,27 +5,31 @@ arikAzterketaModuleUI <- function(id) {
   ns <- NS(id)
   
   tagList(
-    h4("Momentuz irakasle Arik21tik aurrera bakarrik erakusten dira",style="color:red"),
-    arikGaldAzterketaModuleUI(ns("galdera1"),"Ariketak 'Izarrei begira' unitateko zientziako kontzeptu bat lantzeko balio du"),
+    h4("Momentuz Arik21tik aurrera bakarrik erakusten dira",style="color:red"),
     br(),
-    arikGaldAzterketaModuleUI(ns("galdera2"),"Aukera bakarra da argi eta garbi erantzun zuzena"),
+    arikAzterketaViewModuleUI(ns("guztiak"),"Guztiak kontuan hartuta"),
     br(),
-    arikGaldAzterketaModuleUI(ns("galdera3"),"Distraigarriak bere funtzioa betetzen du. Distraigarria baliagarria da")
+    arikAzterketaViewModuleUI(ns("baseline"),"Baseline heuristikoarekin sortutakoak"),
+    br(),
+    arikAzterketaViewModuleUI(ns("mono"),"Monosemikoentzako heuristikoarekin sortutakoak"),
+    br(),
+    arikAzterketaViewModuleUI(ns("poli"),"Polisemikoentzako heuristikoarekin sortutakoak")
   )
 }
 
 ## Zerbitzariari lotutako kodea
 arikAzterketaModule<- function(input, output, session, data) {
-  dataGald1 <- reactive({
-    filter(data(), Galdera==1)
+  baseline <- reactive({
+    filter(data(), Heuristikoa=="baseline")
   })
-  dataGald2 <- reactive({
-    filter(data(), Galdera==2)
+  mono <- reactive({
+    filter(data(), Heuristikoa=="mono")
   })
-  dataGald3 <- reactive({
-    filter(data(), Galdera==3)
+  poly <- reactive({
+    filter(data(), Heuristikoa=="poly")
   })
-  callModule(arikGaldAzterketaModule, "galdera1", dataGald1)
-  callModule(arikGaldAzterketaModule, "galdera2", dataGald2)
-  callModule(arikGaldAzterketaModule, "galdera3", dataGald3)
+  callModule(arikAzterketaViewModule, "guztiak", data)
+  callModule(arikAzterketaViewModule, "baseline", baseline)
+  callModule(arikAzterketaViewModule, "mono", mono)
+  callModule(arikAzterketaViewModule, "poli", poly)
 }

@@ -6,8 +6,10 @@ exerciseAgreementViewModuleUI <- function(id, testua) {
   
   tagList(
     h3(testua),
-    br(),
-    h3("Gwet adostasuna erabiliz"),
+    h4("Batazbesteko adostasun maila"),
+    fluidRow(
+      column(5, C3GaugeOutput(ns("avgAgr")))
+    ),
     h4("Irakasleen arteko adostasuna ariketa bakoitzean (Distraigarrietan) - Ohar kopurua adierazita"),
     fluidRow(
       plotOutput(ns("agrPlot"))
@@ -16,97 +18,56 @@ exerciseAgreementViewModuleUI <- function(id, testua) {
     fluidRow(
       plotOutput(ns("agrBalPlot"))
     ),
-    br(),
-    h3("Balorazioen batetorzeak erabiliz"),
-    h4("Irakasleen arteko adostasuna ariketa bakoitzean (Distraigarrietan) - Ohar kopurua adierazita"),
+    h4("Irakasleen arteko adostasuna ariketa bakoitzean (Distraigarrietan) - erabilitako heuristikoa adierazita"),
     fluidRow(
-      plotOutput(ns("batPlot"))
-    ),
-    h4("Irakasleen arteko adostasuna ariketa bakoitzean (Distraigarrietan) - balorazioa adierazita"),
-    fluidRow(
-      plotOutput(ns("batBalPlot"))
-    ),
-    h3("Distraigarrien balorazioak"),
-    fluidRow(
-      plotOutput(ns("distPlot"))
-    ),
-    
-   # fluidRow(
-    #  column(12,verbatimTextOutput(ns("info")))
-    #),
-    h3("Oharrak"),
-    fluidRow(
-      column(12, taulaModuleUI(ns("oharrakAdos")))
+      plotOutput(ns("agrHeuristPlot"))
     )
   )
 }
 
 ## Zerbitzariari lotutako kodea
 exerciseAgreementViewModule <- function(input, output, session, data) {
- # output$info <- renderPrint({data()})
+
+  batazbestekoa <- reactive({mean(data()$Adostasuna)})
   
-  oharrak <- reactive({data()$oharrak})
+  # Erakutsi batazbesteko adostasuna
+  output$avgAgr <- renderC3Gauge({C3Gauge(round(batazbestekoa(),2))})
   
   # Erakutsi adostasun informazioa
   output$agrPlot <- renderPlot({
-    plot.data <- data()$data
+    plot.data <- data()
     plot.data$Ariketa <- as.numeric(plot.data$Ariketa)
-    plot.data$baxua <- plot.data$Adostasuna<0.7 
     ggplot(plot.data, aes(x=as.factor(Ariketa), y=Adostasuna, color=as.factor(OharKopurua), shape=Mota)) + 
       geom_point( size=5) + #aes(shape=as.factor(Ev)),
       xlab("Ariketa") + 
       ylab("Ebaluatzaileen arteko adostasuna") +
-      scale_color_manual(name="Ohar kopurua", values=c("0"="green", "1"="blue","2"= "red"))
+      scale_color_manual(name="Ohar kopurua", values=c("0"="green", "1"="blue","2"= "red")) + 
+      geom_hline(yintercept = batazbestekoa(), linetype="dashed", color="blue")
   })
   
   # Erakutsi adostasun informazioa balorazioen arabera
   output$agrBalPlot <- renderPlot({
-    plot.data <- data()$data
+    plot.data <- data()
     plot.data$Ariketa <- as.numeric(plot.data$Ariketa)
-    plot.data$baxua <- plot.data$Adostasuna<0.7 
     ggplot(plot.data, aes(x=as.factor(Ariketa), y=Adostasuna, color=Batazbestekoa, shape=Mota)) + 
       geom_point( size=5) + #aes(shape=as.factor(Ev)),
       xlab("Ariketa") + 
       ylab("Ebaluatzaileen arteko adostasuna") +
-      scale_color_gradient()
+      scale_color_gradient()+ 
+      geom_hline(yintercept = batazbestekoa(), linetype="dashed", color="blue")
   })
   
   
-  # Erakutsi batetortze informazioa
-  output$batPlot <- renderPlot({
-    plot.data <- data()$data
+  # Erakutsi adostasun informazioa balorazioen arabera
+  output$agrHeuristPlot <- renderPlot({
+    plot.data <- data()
     plot.data$Ariketa <- as.numeric(plot.data$Ariketa)
-    plot.data$baxua <- plot.data$Adostasuna<0.7 
-    ggplot(plot.data, aes(x=as.factor(Ariketa), y=BatEtortzea, color=as.factor(OharKopurua), shape=Mota)) + 
+    ggplot(plot.data, aes(x=as.factor(Ariketa), y=Adostasuna, color=Heuristikoa, shape=Mota)) + 
       geom_point( size=5) + #aes(shape=as.factor(Ev)),
       xlab("Ariketa") + 
       ylab("Ebaluatzaileen arteko adostasuna") +
-      scale_color_manual(name="Ohar kopurua", values=c("0"="green", "1"="blue","2"= "red"))
+      scale_color_discrete()+ 
+      geom_hline(yintercept = batazbestekoa(), linetype="dashed", color="blue")
   })
   
-  # Erakutsi batetortze informazioa balorazioen arabera
-  output$batBalPlot <- renderPlot({
-    plot.data <- data()$data
-    plot.data$Ariketa <- as.numeric(plot.data$Ariketa)
-    plot.data$baxua <- plot.data$Adostasuna<0.7 
-    ggplot(plot.data, aes(x=as.factor(Ariketa), y=BatEtortzea, color=Batazbestekoa, shape=Mota)) + 
-      geom_point( size=5) + #aes(shape=as.factor(Ev)),
-      xlab("Ariketa") + 
-      ylab("Ebaluatzaileen arteko adostasuna") +
-      scale_color_gradient()
-  })
-  
-  # Erakutsi balorazioan informazioa
-  output$distPlot <- renderPlot({
-    plot.data <- data()$balorazioak
-    plot.data$Ariketa <- as.numeric(plot.data$Ariketa)
- 
-    ggplot(plot.data, aes(x=as.factor(Ariketa), y=Balioa, color=Irak, shape=Mota)) + 
-      #geom_point( size=5) + #aes(shape=as.factor(Ev)),
-      xlab("Ariketa") + 
-      ylab("Balorazioa")  + geom_jitter(width=.25, size=5, height = .25, alpha=.75)
-  })
-  
-  # Erakutsi oharrak
-  callModule(taulaModule,"oharrakAdos",oharrak)
 }

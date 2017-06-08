@@ -5,7 +5,7 @@ arikGaldAzterketaModuleUI <- function(id, testua) {
   ns <- NS(id)
   
   tagList(
-    h3(testua),
+    h4(testua),
     verbatimTextOutput(ns("testua")),
     plotOutput(ns("plot"))
     

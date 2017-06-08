@@ -136,9 +136,17 @@ shinyServer(function(input, output) {
     kalkulatuBatEtortzeak(ados.datuak)
   })
   
+  ariketenHeuristikoak <- reactive({
+    select(data(), Ariketa, Heuristikoa)
+  })
+  
+  adostasunAriketenHeuristikoak <- reactive({
+    filter(ariketenHeuristikoak(), Ariketa<=20)
+  })
+  
   dataDistrAdostasuna <- reactive({
    # 
-    adostasun.info <- filter(adostasunDatuak(), Galdera == 3) %>% select(Ariketa, Adostasuna)
+    adostasun.info <- filter(adostasunDatuak(), Galdera == 3) %>% select(Ariketa,Adostasuna)
     
     ## Gehitu bat etortzea
     bat.etortzea <- filter(dataBatEtorri(), Galdera==3)
@@ -151,6 +159,10 @@ shinyServer(function(input, output) {
      ## Gehitu batazbesteko balorazioa
      batazbesteko.balorazioa <- dataBatazbestekoa()
      adostasun.info <- merge(adostasun.info, batazbesteko.balorazioa, by="Ariketa")
+     
+     ## Gehitu heuristikoa
+     heuristikoak <- adostasunAriketenHeuristikoak()
+     adostasun.info <- merge(adostasun.info, heuristikoak, by="Ariketa")
      
      # Oharrak izan dituztenak
      agr.oharrak <- filter(oharrak(),Ariketa <=20, !is.na(Balioa)) %>% group_by(Ariketa) %>% summarise(OharKopurua=n())
@@ -166,7 +178,7 @@ shinyServer(function(input, output) {
   })
   
   dataDistrAdostasunaAberastua <- reactive({
-    list(data= dataDistrAdostasuna(), oharrak = filter(oharrak(), Ariketa<=20), balorazioak=filter(datuGuztiak(), Galdera==3, Ariketa<=20) %>% select(Irak, Ariketa, Mota, Balioa))
+    list(data= dataDistrAdostasuna(), oharrak = filter(oharrak(), Ariketa<=20), balorazioak=filter(datuGuztiak(), Galdera==3, Ariketa<=20) %>% select(Irak, Ariketa, Mota, Balioa, Heuristikoa))
   })
   
   dataAriketaBakunak <- reactive({filter(dataAriketak(),Mota =="BAK")})
@@ -193,7 +205,7 @@ shinyServer(function(input, output) {
   callModule(agreementModule, "adostasunaBakunak", dataAgreementBakunak) 
   callModule(agreementModule, "adostasunaAnitzak", dataAgreementAnitzak)
   ## Hau agian mugituko dut
-  callModule(exerciseAgreementViewModule, "hobetua", dataDistrAdostasunaAberastua)
+  callModule(exerciseAgreementAnalysisModule, "hobetua", dataDistrAdostasunaAberastua)
   callModule(arikAzterketaModule,"guztiak",dataAriketak)
   callModule(arikAzterketaModule,"bakunak",dataAriketaBakunak)
   callModule(arikAzterketaModule,"anitzak",dataAriketaAnitzak)

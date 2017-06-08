@@ -7,24 +7,24 @@ agreementViewModuleUI <- function(id, testua) {
   tagList(
     h3(testua),
     fluidRow(
-      column(7, 
+      column(8, 
         h4("Kappa"),
         fluidRow(
           column(4,C3GaugeOutput(ns("irrPlot"))),
-          column(3,verbatimTextOutput(ns("irr")))
+          column(4,verbatimTextOutput(ns("irr")))
         ),
         h4("Gwet's AC"),
         fluidRow(
           column(4,C3GaugeOutput(ns("gwetPlot"))),
-          column(3,verbatimTextOutput(ns("gwetScore")))),
+          column(4,verbatimTextOutput(ns("gwetScore")))),
         h4("Adostasun portzentaia"),
         fluidRow(
           column(4,C3GaugeOutput(ns("percPlot"))),
-          column(3,verbatimTextOutput(ns("perc"))))
+          column(4,verbatimTextOutput(ns("perc"))))
         ),
        
     
-      column(5, 
+      column(4, 
              h4 ("Balorazioak"),
              fluidRow(
                     plotOutput(ns("balPlot"))

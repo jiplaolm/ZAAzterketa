@@ -21,8 +21,10 @@ source("tresnak.R") # Data azterketarako, Agian modulu bihurtu eta mugitu menpek
 # Garatutako Shiny moduluak ere kargatu
 source("agreementModule.R")
 source("arikAzterketaModule.R")
+source("arikAzterketaViewModule.R")
 source("taulaModule.R")
 source("agreementViewModule.R")
 source("arikGaldAzterketaModule.R")
+source("exerciseAgreementAnalysisModule.R")
 source("exerciseAgreementViewModule.R")
 source("raterMonitoringViewModule.R")
