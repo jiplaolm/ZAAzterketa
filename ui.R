@@ -42,6 +42,10 @@ shinyUI(fluidPage(useShinyjs(),
       tabPanel("Adostasuna Anitzak",agreementModuleUI("adostasunaAnitzak")),
       # Ariketa mailako distraigarrien adostasuna
       tabPanel("Distraigarrien Adostasuna hobetua",exerciseAgreementAnalysisModuleUI("hobetua", "Distraigarrien informazioa hobetua")),
+      # Ariketa mailako distraigarrien adostasuna - BAK
+      tabPanel("Distraigarrien Adostasuna hobetua - BAK",exerciseAgreementAnalysisModuleUI("hobetuaBAK", "Distraigarrien informazioa hobetua - Bakunak")),
+      # Ariketa mailako distraigarrien adostasuna - ANI
+      tabPanel("Distraigarrien Adostasuna hobetua - ANI",exerciseAgreementAnalysisModuleUI("hobetuaANI", "Distraigarrien informazioa hobetua- Hitz Anitzak")),
       # Ariketen inguruko informazioa
       tabPanel("Ariketen informazioa", arikAzterketaModuleUI("guztiak")),
       # Ariketa motaka

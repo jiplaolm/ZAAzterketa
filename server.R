@@ -181,6 +181,16 @@ shinyServer(function(input, output) {
     list(data= dataDistrAdostasuna(), oharrak = filter(oharrak(), Ariketa<=20), balorazioak=filter(datuGuztiak(), Galdera==3, Ariketa<=20) %>% select(Irak, Ariketa, Mota, Balioa, Heuristikoa))
   })
   
+  dataDistrAdostasunaAberastuaBAK <- reactive({
+    dataFil <- dataDistrAdostasuna() %>% filter(Mota=="BAK")
+    list(data= dataFil, oharrak = filter(oharrak(), Ariketa<=20), balorazioak=filter(datuGuztiak(), Galdera==3, Ariketa<=20) %>% select(Irak, Ariketa, Mota, Balioa, Heuristikoa))
+  })
+  
+  dataDistrAdostasunaAberastuaANI <- reactive({
+    dataFil <- dataDistrAdostasuna() %>% filter(Mota=="ANI")
+    list(data= dataFil, oharrak = filter(oharrak(), Ariketa<=20), balorazioak=filter(datuGuztiak(), Galdera==3, Ariketa<=20) %>% select(Irak, Ariketa, Mota, Balioa, Heuristikoa))
+  })
+  
   dataAriketaBakunak <- reactive({filter(dataAriketak(),Mota =="BAK")})
   
   dataAriketaAnitzak <- reactive({filter(dataAriketak(),Mota =="ANI")})
@@ -206,6 +216,8 @@ shinyServer(function(input, output) {
   callModule(agreementModule, "adostasunaAnitzak", dataAgreementAnitzak)
   ## Hau agian mugituko dut
   callModule(exerciseAgreementAnalysisModule, "hobetua", dataDistrAdostasunaAberastua)
+  callModule(exerciseAgreementAnalysisModule, "hobetuaBAK", dataDistrAdostasunaAberastuaBAK)
+  callModule(exerciseAgreementAnalysisModule, "hobetuaANI", dataDistrAdostasunaAberastuaANI)
   callModule(arikAzterketaModule,"guztiak",dataAriketak)
   callModule(arikAzterketaModule,"bakunak",dataAriketaBakunak)
   callModule(arikAzterketaModule,"anitzak",dataAriketaAnitzak)
