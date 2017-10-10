@@ -6,11 +6,12 @@ library(shinyjs)
 library(DT)
 library(plyr)
 library(dplyr)
-library(tidyr)
 library(likert)
 library(reshape2)
 library(irr)
 library(rel)
+
+library(tidyr)
 
 
 #options(shiny.maxRequestSize=5*1024^2) # Igotzeko tamaina igo behar izanez gero

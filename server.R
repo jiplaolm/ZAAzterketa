@@ -73,8 +73,10 @@ shinyServer(function(input, output) {
   })
   
   
+  
   ## Datuak prestatu - Egokituta (Motak eta heuristikoa informazio fitxategitik jasota)
   datuGuztiak <- reactive({
+  
     data <- fitxategiakIrakurri(fitxategiak())
     ## Ezabatu mota eta gehitu ariketen informaziotik jasotako mota eta erabilitako heuristikoa
     #
@@ -88,7 +90,16 @@ shinyServer(function(input, output) {
   
   
   oharrak <- reactive({
-    select(filter(subset(datuGuztiak(),Galdera==4),!is.na(Balioa)),-Galdera,-Distraigarria)
+    data <- fitxategiakIrakurri(fitxategiak())
+    ebaluazioDatuak <- select(subset(data, Galdera!=4),-Distraigarria, -Mota)
+    galderaIzenak <- c('G1', 'G2', 'G3.1', 'G3.2', 'G3.3')
+   
+    ebaluazioDatuak$Galdera <- rep(galderaIzenak,nrow(ebaluazioDatuak)/length(galderaIzenak))
+    ebaluazioak <- spread(ebaluazioDatuak,Galdera, Balioa)
+    ebalOharrak <- select(filter(subset(datuGuztiak(),Galdera==4),!is.na(Balioa)),-Galdera,-Distraigarria)
+    
+    result <- merge(ebaluazioak, ebalOharrak, by=c('Irak', 'Ariketa'), all.y=T)
+      return(result)
     })
   
   data <- reactive({
